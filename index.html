@@ -1,1 +1,142 @@
-index
+<html>
+<canvas id="gameCanvas" width = "800" height = "600"></canvas>
+
+<script>
+	var canvas;
+	var canvasContext;
+	var playerX = 400;
+	var playerY = 300;
+	
+	function calculateMousePos(evt){
+		var rect = canvas.getBoundingClientRect();
+		var root = document.documentElement;
+		var mouseX = evt.clientX - rect.left - root.scrollLeft;
+		var mouseY = evt.clientY - rect.top -root.scrollTop;
+		
+		return{
+			x:mouseX,
+			y:mouseY
+		};
+	}
+	
+	function handleMouseClick(evt){
+		
+	}
+	
+	function handleMouseMove(evt){
+			var mousePos = calculateMousePos(evt);
+			//paddleY = mousePos.y - (PADDLE_HEIGHT/2);
+	}
+	
+	
+	
+	function handleKeyPress(evt){
+		console.log("KeyPress");
+	}
+	
+	// Delay until window FINISHED loading
+	window.onload = function() {
+		canvas = document.getElementById("gameCanvas");
+		canvasContext = canvas.getContext("2d");
+		
+		var framesPerSecond = 60;
+		setInterval(function(){
+			drawEverything();
+			moveEverything();
+		}, 1000/framesPerSecond);
+		
+		canvas.addEventListener('mousemove', handleMouseMove);		
+		canvas.addEventListener('mousedown', handleMouseClick);
+		document.addEventListener('keydown', handleKeyDown);
+		document.addEventListener('keypress', handleKeyPress);
+	}
+	
+	function drawEverything(){
+		// Outer Frame
+		drawRect(0,0,canvas.width,canvas.height,"black");
+		
+		drawPlayer(playerX, playerY);
+		
+		// Message
+		canvasContext.fillText("GREETINGS!", 100, 100);
+	}
+	
+	function moveEverything(){
+
+	}
+	
+	// Movement
+	function handleKeyDown(evt){
+		console.log("KeyDown: "+evt.keyCode);
+		
+		// a
+		if (evt.keyCode == 65 || evt.which == 65)
+		{
+			if (playerX > 0)
+			{
+				playerX -= 5;
+			}
+		}
+		
+		// d
+		if (evt.keyCode == 68 || evt.which == 68)
+		{
+			if (playerX < canvas.width)
+			{
+				playerX += 5;
+			}
+		}
+		
+		// W
+		if (evt.keyCode == 87 || evt.which == 87)
+		{
+			if (playerY > 0)
+			{
+				playerY -= 5;
+			}
+		}
+		
+		// s
+		if (evt.keyCode == 83 || evt.which == 83)
+		{
+			if (playerY < canvas.height)
+			{
+				playerY += 5;
+			}
+		}
+	}
+	
+	function drawRect(x, y, width, height, color){
+		canvasContext.fillStyle = color;
+		canvasContext.fillRect(x,y,width,height);
+	}
+	
+	function drawCircle(x,y,radius,color){
+		canvasContext.fillStyle = color;
+		canvasContext.beginPath();
+		canvasContext.arc(x,y,radius,0, Math.PI * 2);
+		canvasContext.fill();
+	}
+	
+	function drawPlayer(bodyX, bodyY){
+		// Head
+		drawCircle(bodyX, bodyY-25, 12, "white");
+		
+		// Body
+		drawCircle(bodyX, bodyY, 20, "white");
+		
+		// Arm1
+		drawCircle(bodyX+25, bodyY, 10, "white");
+		
+		// Arm2
+		drawCircle(bodyX-25, bodyY, 10, "white");
+		
+		// Leg1
+		drawCircle(bodyX+10, bodyY+25, 10, "white");
+		
+		// Leg2
+		drawCircle(bodyX-10, bodyY+25, 10, "white");
+	}
+</script>
+
+</html>
