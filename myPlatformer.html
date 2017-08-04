@@ -1,11 +1,12 @@
 <html>
 <canvas id="gameCanvas" width = "800" height = "600"></canvas>
-
+<body>
 <script>
 	var canvas;
 	var canvasContext;
 	var playerX = 400;
 	var playerY = 300;
+	var keys;
 	
 	function calculateMousePos(evt){
 		var rect = canvas.getBoundingClientRect();
@@ -48,7 +49,7 @@
 		canvas.addEventListener('mousemove', handleMouseMove);		
 		canvas.addEventListener('mousedown', handleMouseClick);
 		document.addEventListener('keydown', handleKeyDown);
-		document.addEventListener('keypress', handleKeyPress);
+		document.addEventListener('keyup', handleKeyUp);
 	}
 	
 	function drawEverything(){
@@ -68,9 +69,12 @@
 	// Movement
 	function handleKeyDown(evt){
 		console.log("KeyDown: "+evt.keyCode);
+		keys = (keys || []);
+		keys[evt.keyCode] = true;
 		
 		// a
-		if (evt.keyCode == 65 || evt.which == 65)
+		//if (evt.keyCode == 65 || evt.which == 65)
+		if (keys[65])
 		{
 			if (playerX > 0)
 			{
@@ -79,7 +83,8 @@
 		}
 		
 		// d
-		if (evt.keyCode == 68 || evt.which == 68)
+		//if (evt.keyCode == 68 || evt.which == 68)
+		if (keys[68])
 		{
 			if (playerX < canvas.width)
 			{
@@ -88,7 +93,8 @@
 		}
 		
 		// W
-		if (evt.keyCode == 87 || evt.which == 87)
+		//if (evt.keyCode == 87 || evt.which == 87)
+		if (keys[87])
 		{
 			if (playerY > 0)
 			{
@@ -97,13 +103,18 @@
 		}
 		
 		// s
-		if (evt.keyCode == 83 || evt.which == 83)
+		//if (evt.keyCode == 83 || evt.which == 83)
+		if (keys[83])
 		{
 			if (playerY < canvas.height)
 			{
 				playerY += 5;
 			}
 		}
+	}
+	
+	function handleKeyUp(evt){
+		keys[evt.keyCode] = false;
 	}
 	
 	function drawRect(x, y, width, height, color){
@@ -138,5 +149,5 @@
 		drawCircle(bodyX-10, bodyY+25, 10, "white");
 	}
 </script>
-
+</body>
 </html>
