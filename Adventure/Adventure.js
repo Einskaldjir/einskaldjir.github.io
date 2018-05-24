@@ -1,6 +1,7 @@
 var iHealth = "100";
 var iWealth = 0;
 var i = 0;
+var back = 0;
 
 if (iWealth === 0)
 {
@@ -8,6 +9,7 @@ if (iWealth === 0)
 }
 
  function goTo(newLocale) {
+	 back = i;
 	i = newLocale;
 
 	setInnerHtml("Header", "<span style='color:red;'>Health:</span> " + iHealth + " <span style='color:brown;'>Wealth:</span> " + iWealth);
@@ -21,11 +23,12 @@ function setInnerHtml(id, value) {
 }
 
 function orderDrink() {
-	if (iWealth <= 0)
+	if (iWealth < 0 || iWealth === "El Zilcho")
 	{
 		alert("You don't have any money!");
 	}
 
+	console.log(iWealth);
 	console.log("orderDrink()");
 }
 
