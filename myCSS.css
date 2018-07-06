@@ -27,9 +27,11 @@
   grid-row: 2 / 5;
 }
 
-.beautify {
-    padding: 20px 0px;
-    text-align: center;
+.footer {
+    border-style: solid;
+    border-width: 0px 0px 0px 15px;
+    border-color: #555;
+    grid-column: 1 / 5;
 }
 
 a:link, a:visited {
