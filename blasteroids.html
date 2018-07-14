@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<h1>BLaSTeR0iDS!!!</h1>
+<canvas id="gameCanvas" width = "800" height = "600"></canvas>
+
+<script>
+	var canvas;
+	var canvasContext;
+	
+	const SHIP_WIDTH = 20;
+	const SHIP_HEIGHT = 20;
+    
+	var blasteroidX = 400;
+	var blasteroidY = 300;
+	var blasteroidR = 5;
+	var blasteroidSpeed = 3;
+    
+    var missileSpeed = 5;
+    var missiles; // array?
+	
+	var playerScore = 0;
+	const WINNING_SCORE = 3;
+	
+	var pause = false;
+	var playerWin = false;
+	var enemyWin = false;
+	
+	function calculateMousePos(evt){
+		var rect = canvas.getBoundingClientRect();
+		var root = document.documentElement;
+		var mouseX = evt.clientX - rect.left - root.scrollLeft;
+		var mouseY = evt.clientY - rect.top -root.scrollTop;
+		
+		return{
+			x:mouseX,
+			y:mouseY
+		};
+	}
+	
+	function handleMouseClick(evt){
+		// FIRE!
+        drawCircle(canvas.width / 2, canvas.height / 2, 3, "white");
+	}
+	
+	// Delay until window FINISHED loading
+	window.onload = function() {
+		canvas = document.getElementById("gameCanvas");
+		canvasContext = canvas.getContext("2d");
+		
+		var framesPerSecond = 60;
+		setInterval(function(){
+			drawEverything();
+			moveEverything();
+		}, 1000/framesPerSecond);
+		
+		canvas.addEventListener('mousemove',
+			function(evt){
+				var mousePos = calculateMousePos(evt);
+				paddleY = mousePos.y - (PADDLE_HEIGHT/2);
+		});
+		
+		canvas.addEventListener('mousedown', handleMouseClick);			
+	}
+	
+	function drawNet(){
+		for (var i = 10; i < canvas.height - 10; i += 40){
+			drawRect(canvas.width/2-1, i, 2, 20, "white");
+		}
+	}
+	
+	function drawEverything(){
+		// Outer Frame
+		//drawRect(0,0,canvas.width,canvas.height,"purple");
+		
+		// Frame
+		drawRect(10,10,canvas.width,canvas.height,"black");
+        
+        // Ship
+        drawRect(canvas.width/2, canvas.height/2, SHIP_WIDTH, SHIP_HEIGHT, "white");
+		
+		// Blasteroid
+		drawCircle(blasteroidX, blasteroidY, blasteroidR, "white");
+		
+		// Score
+		canvasContext.fillText("Score: " + playerScore, canvas.width / 2, 50);
+	}
+	
+	function moveEverything() {
+		
+		blasteroidX += blasteroidSpeed;
+		blasteroidY += blasteroidSpeed;
+		
+		if (ballY >= canvas.height - 20 || ballY <= 10){
+			ballspeedY = -ballspeedY;
+		}
+		
+        // Collision
+		if (ballX <= paddleX + PADDLE_WIDTH && ballY >= paddleY && ballY <= paddleY + PADDLE_HEIGHT){
+			ballspeedX = -ballspeedX;
+			
+			var deltaY = ballY - (paddleY+(PADDLE_HEIGHT/2));
+			ballspeedY = deltaY * 0.25;
+		}
+		else if (ballX >= paddle2X && ballY >= paddle2Y && ballY <= paddle2Y + PADDLE_HEIGHT){
+			ballspeedX = -ballspeedX;
+			
+			var deltaY = ballY - (paddle2Y+(PADDLE_HEIGHT/2));
+			ballspeedY = deltaY * 0.25;
+		}
+	}
+	
+	function drawRect(x, y, width, height, color){
+		canvasContext.fillStyle = color;
+		canvasContext.fillRect(x,y,width,height);
+	}
+	
+	function drawCircle(x,y,radius,color){
+		canvasContext.fillStyle = color;
+		canvasContext.beginPath();
+		canvasContext.arc(x,y,radius,0, Math.PI * 2);
+		canvasContext.fill();
+	}
+</script>
+
+</html>
