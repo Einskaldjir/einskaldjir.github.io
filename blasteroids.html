@@ -1,5 +1,20 @@
 <!DOCTYPE html>
 <html>
+<body>
+
+<style>
+    body {        
+        margin: auto;
+        padding: 0px;
+        display: block;
+        background-color: #111;
+    }
+    
+    h1 {
+        color: white;
+    }
+</style>
+    
 <h1>BLaSTeR0iDS!!!</h1>
 <canvas id="gameCanvas" width = "800" height = "600"></canvas>
 
@@ -10,36 +25,52 @@
 	const SHIP_WIDTH = 20;
 	const SHIP_HEIGHT = 20;
     
-	var blasteroidX = 400;
-	var blasteroidY = 300;
-	var blasteroidR = 5;
-	var blasteroidSpeed = 3;
+    class blasteroid {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.radius = 10;
+            this.speed = 3;
+        }
+    }
+    var blasteroids = [];
     
-    var missileSpeed = 5;
-    var missiles; // array?
+    class missile {
+        constructor() {
+            this.x = canvas.width / 2;
+            this.y = canvas.height / 2;
+            this.radius = 2;
+            this.speed = 5;
+        }
+    }
+    var missiles =[];
 	
 	var playerScore = 0;
-	const WINNING_SCORE = 3;
+	const WINNING_SCORE = 3000000;
 	
 	var pause = false;
 	var playerWin = false;
 	var enemyWin = false;
+    
+    var time = 0;
 	
-	function calculateMousePos(evt){
+	function calculateMousePos(evt) {
 		var rect = canvas.getBoundingClientRect();
 		var root = document.documentElement;
 		var mouseX = evt.clientX - rect.left - root.scrollLeft;
 		var mouseY = evt.clientY - rect.top -root.scrollTop;
 		
-		return{
+		return {
 			x:mouseX,
 			y:mouseY
 		};
 	}
 	
-	function handleMouseClick(evt){
+	function handleMouseClick(evt) {
 		// FIRE!
-        drawCircle(canvas.width / 2, canvas.height / 2, 3, "white");
+        // Spawn missile...
+        missiles.push(new missile());
+        console.log("FIRE!");
 	}
 	
 	// Delay until window FINISHED loading
@@ -51,62 +82,85 @@
 		setInterval(function(){
 			drawEverything();
 			moveEverything();
+            time++;
 		}, 1000/framesPerSecond);
 		
 		canvas.addEventListener('mousemove',
-			function(evt){
+			function(evt) {
 				var mousePos = calculateMousePos(evt);
-				paddleY = mousePos.y - (PADDLE_HEIGHT/2);
+				//paddleY = mousePos.y - (PADDLE_HEIGHT/2);
 		});
 		
 		canvas.addEventListener('mousedown', handleMouseClick);			
 	}
 	
-	function drawNet(){
-		for (var i = 10; i < canvas.height - 10; i += 40){
-			drawRect(canvas.width/2-1, i, 2, 20, "white");
-		}
-	}
-	
 	function drawEverything(){
 		// Outer Frame
-		//drawRect(0,0,canvas.width,canvas.height,"purple");
+		drawRect(0,0,canvas.width,canvas.height,"white");
 		
 		// Frame
-		drawRect(10,10,canvas.width,canvas.height,"black");
+		drawRect(2,2,canvas.width - 5,canvas.height - 5,"black");
         
         // Ship
         drawRect(canvas.width/2, canvas.height/2, SHIP_WIDTH, SHIP_HEIGHT, "white");
 		
-		// Blasteroid
-		drawCircle(blasteroidX, blasteroidY, blasteroidR, "white");
+		// Blasteroids
+        //console.log("Blasteroids: "+ blasteroids.length);
+        if (blasteroids.length < 1) {
+            if (time % 100 > 50) {
+                blasteroids.push(new blasteroid(0, time % canvas.height));
+            }
+            else {
+                blasteroids.push(new blasteroid(time % canvas.width, 0));
+            }
+        }        
+        for (var i = 0; i < blasteroids.length; i++) {
+            drawCircle(blasteroids[i].x, blasteroids[i].y, blasteroids[i].radius, "white")
+        }
+        
+        // Missiles
+        for (var i = 0; i < missiles.length; i++) {
+            drawCircle(missiles[i].x, missiles[i].y, missiles[i].radius, "white");
+            //console.log("Missiles: "+missiles.length);
+        }
 		
 		// Score
 		canvasContext.fillText("Score: " + playerScore, canvas.width / 2, 50);
 	}
 	
 	function moveEverything() {
-		
-		blasteroidX += blasteroidSpeed;
-		blasteroidY += blasteroidSpeed;
-		
-		if (ballY >= canvas.height - 20 || ballY <= 10){
-			ballspeedY = -ballspeedY;
-		}
-		
-        // Collision
-		if (ballX <= paddleX + PADDLE_WIDTH && ballY >= paddleY && ballY <= paddleY + PADDLE_HEIGHT){
-			ballspeedX = -ballspeedX;
-			
-			var deltaY = ballY - (paddleY+(PADDLE_HEIGHT/2));
-			ballspeedY = deltaY * 0.25;
-		}
-		else if (ballX >= paddle2X && ballY >= paddle2Y && ballY <= paddle2Y + PADDLE_HEIGHT){
-			ballspeedX = -ballspeedX;
-			
-			var deltaY = ballY - (paddle2Y+(PADDLE_HEIGHT/2));
-			ballspeedY = deltaY * 0.25;
-		}
+		// Blasteroids
+        for (var i = 0; i < blasteroids.length; i++) {
+            blasteroids[i].x += blasteroids[i].speed;
+            blasteroids[i].y += blasteroids[i].speed;
+            
+            if (blasteroids[i].x > canvas.width) {                
+                blasteroids[i].x -= canvas.width;
+                
+            }
+            
+            if (blasteroids[i].y > canvas.height) {
+                blasteroids[i].y -= canvas.height;
+            }
+            
+            //console.log(blasteroids[i].x + " " + blasteroids[i].y);
+        }
+        
+        // Missiles
+        for (var i = 0; i < missiles.length; i++) {
+            missiles[i].x += missiles[i].speed;
+            missiles[i].y += missiles[i].speed;   
+            //console.log(missiles[i].x + " " + missiles[i].y);
+            
+            //TODO:
+            // Aim at mouse
+            // Collision?
+            for (var j = 0; j < blasteroids.length; j++) {
+                if (missiles[i].x == blasteroids[j].x && missiles[i].y == blasteroids[j].y) {
+                    blasteroids.splice(j, 1);
+                }
+            }
+        }
 	}
 	
 	function drawRect(x, y, width, height, color){
@@ -121,5 +175,5 @@
 		canvasContext.fill();
 	}
 </script>
-
+</body>
 </html>
