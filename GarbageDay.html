@@ -15,6 +15,8 @@
     var prevTime = 0;
     var deltaTime = 0;
     
+    var textColor = "white";
+    
     var keys;
     var garbageMsg;
     var comment;
@@ -68,14 +70,22 @@
 		drawRect(2,2,canvas.width - 5,canvas.height - 5,"black");
         
         // Game Messages        
-        write("You see the garbage can.", canvas.width / 2 - 100, 100, "white");
-        write("1: Take out the garbage.", canvas.width / 2 - 100, 110, "white");
+        write("You see the garbage can.", canvas.width / 2 - 100, 100, textColor);
+        write("1: Take out the garbage.", canvas.width / 2 - 100, 110, textColor);
         
         if (option != undefined) {
-            write("Before you reach the garbage, you hear:", canvas.width / 2 - 100, 70, "white");
-            write(comment, canvas.width / 2 - 100, 80, "white");
-            write("2: " + option, canvas.width / 2 - 100, 120, "white");
-            //write(garbageMsg, canvas.width / 2 - 100, 150, "white");
+            write("Before you reach the garbage, you hear:", canvas.width / 2 - 100, 70, textColor);
+            write(comment, canvas.width / 2 - 100, 80, textColor);
+            write("2: " + option, canvas.width / 2 - 100, 120, textColor);
+            write(garbageMsg, canvas.width / 2 - 100, 150, textColor);
+        }
+        
+        if (time > 1000) {
+            write("3: Give up in disgust.", canvas.width / 2 - 100, 130, textColor);
+        }
+        
+        if (textColor == "black") {
+            write("Quitter.", canvas.width / 2 - 100, 150, "white");
         }
 	}
 	
@@ -102,19 +112,20 @@
     function handleKeyDown(evt){
 		// console.log("KeyDown: " + evt.keyCode);
         
-		keys = (keys || []);
-		keys[evt.keyCode] = true;
-        
-        if (keys[49]) {
+        if (evt.keyCode == 49) {
+            garbageMsg = "";
             chore = options[time % options.length];
             option = chore.option; // options[time % options.length].option;
             comment = chore.comment; // options[time % options.length].comment;
         }
-        else if (keys[50] && option != undefined) {
+        else if (evt.keyCode == 50 && option != undefined) {
             garbageMsg = chore.msg;
             chore = options[time % options.length];
             option = chore.option; // options[time % options.length].option;
             comment = chore.comment; // options[time % options.length].comment;
+        }
+        if (evt.keyCode == 51 && time > 1000) {
+            textColor = "black";
         }
 	}
     
