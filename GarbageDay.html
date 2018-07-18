@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" type="text/css" href="game.css">
+<title>Garbage Day</title>
+<body>
+    
+<h1>It's Garbage Day...</h1>
+<canvas id="gameCanvas" width = "800" height = "600"></canvas>
+
+<script>
+	var canvas;
+	var canvasContext;
+    
+    var time = 0;
+    var prevTime = 0;
+    var deltaTime = 0;
+    
+    var keys;
+    var garbageMsg;
+    var comment;
+    var option;
+    var options = [
+        {
+            "comment": "Did you do the dishes?",
+            "option": "Do the dishes.",
+            "msg": "You did the dishes."
+        },
+        {
+            "comment": "Could you make a bottle?",
+            "option": "Make a bottle.",
+            "msg": "You made a bottle."
+        },
+        {
+            "comment": "I need the baby's paci!!",
+            "option": "Get the pacifier.",
+            "msg": "You got the pacifier."
+        },
+    ];
+	
+	// Delay until window FINISHED loading
+	window.onload = function() {
+		canvas = document.getElementById("gameCanvas");
+		canvasContext = canvas.getContext("2d");
+		
+		var framesPerSecond = 60;
+		setInterval(function(){
+			drawEverything();
+			moveEverything();
+            time++;
+            //console.log("Time: " + time);
+		}, 1000/framesPerSecond);
+		
+		canvas.addEventListener('mousemove',
+			function(evt) {
+				var mousePos = calculateMousePos(evt);
+		});
+		
+		canvas.addEventListener('mousedown', handleMouseClick);
+        
+        document.addEventListener('keydown', handleKeyDown);
+	}
+    
+    function drawEverything(){
+		// Outer Frame
+		drawRect(0,0,canvas.width,canvas.height,"white");
+		
+		// Frame
+		drawRect(2,2,canvas.width - 5,canvas.height - 5,"black");
+        
+        // Game Messages        
+        write("You see the garbage can.", canvas.width / 2 - 100, 100, "white");
+        write("1: Take out the garbage.", canvas.width / 2 - 100, 110, "white");
+        
+        if (option != undefined) {
+            write("Before you reach the garbage, you hear:", canvas.width / 2 - 100, 70, "white");
+            write(comment, canvas.width / 2 - 100, 80, "white");
+            write("2: " + option, canvas.width / 2 - 100, 120, "white");
+            //write(garbageMsg, canvas.width / 2 - 100, 150, "white");
+        }
+	}
+	
+	function moveEverything() {
+		// Reserved
+	}
+    
+    function calculateMousePos(evt) {
+		var rect = canvas.getBoundingClientRect();
+		var root = document.documentElement;
+		var mouseX = evt.clientX - rect.left - root.scrollLeft;
+		var mouseY = evt.clientY - rect.top - root.scrollTop;
+		
+		return {
+			x:mouseX,
+			y:mouseY
+		};
+	}
+	
+	function handleMouseClick(evt) {
+        // Reserved
+	}
+    
+    function handleKeyDown(evt){
+		// console.log("KeyDown: " + evt.keyCode);
+        
+		keys = (keys || []);
+		keys[evt.keyCode] = true;
+        
+        if (keys[49]) {
+            chore = options[time % options.length];
+            option = chore.option; // options[time % options.length].option;
+            comment = chore.comment; // options[time % options.length].comment;
+        }
+        else if (keys[50] && option != undefined) {
+            garbageMsg = chore.msg;
+            chore = options[time % options.length];
+            option = chore.option; // options[time % options.length].option;
+            comment = chore.comment; // options[time % options.length].comment;
+        }
+	}
+    
+    function write(msg, x, y, color) {
+        canvasContext.textAlign = "left";
+        canvasContext.fillStyle = color;
+        canvasContext.fillText(msg, x, y);
+    }
+	
+	function drawRect(x, y, width, height, color){
+		canvasContext.fillStyle = color;
+		canvasContext.fillRect(x,y,width,height);
+	}
+	
+	function drawCircle(x,y,radius,color){
+		canvasContext.fillStyle = color;
+		canvasContext.beginPath();
+		canvasContext.arc(x,y,radius,0, Math.PI * 2);
+		canvasContext.fill();
+	}
+</script>
+</body>
+</html>
