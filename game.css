@@ -1,0 +1,11 @@
+body {        
+    margin: auto;
+    padding: 0px;
+    display: block;
+    width: 800px;
+    background-color: #111;
+}
+
+h1 {
+    color: white;
+}
